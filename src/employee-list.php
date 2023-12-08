@@ -15,12 +15,12 @@ $data = array(
     <title>Seznam zaměstnanců</title>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/style.css" />
-
     <script src="https://kit.fontawesome.com/060a5d6fda.js" crossorigin="anonymous"></script>
-    <script src="bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="js/script.js"></script>
+
 </head>
 
-<body>
+<body class="m-0">
     <h2>Zaměstnanci</h2>
     <form class="row g-3 mb-3">
         <div class="col-md-5">
