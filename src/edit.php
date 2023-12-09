@@ -1,21 +1,16 @@
 <?php
 include 'db/db_connect.php';
 
-// Check if the 'id' parameter is set in the URL
+//ziskani dat uzivatele
 if (isset($_GET['id'])) {
-    // Retrieve the user ID from the URL
     $userId = $_GET['id'];
 
-    // Query to fetch user data based on the ID
     $sql = "SELECT * FROM zamestnanci WHERE id = $userId";
     $result = $conn->query($sql);
 
-    // Check if the query was successful
     if ($result && $result->num_rows > 0) {
-        // Fetch the user data
-        $userData = $result->fetch_assoc();
 
-        // Now you can use $userData to pre-fill the input fields
+        $userData = $result->fetch_assoc();
     } else {
         echo "Uživatel nenalezen";
     }
@@ -186,21 +181,19 @@ if (isset($_GET['id'])) {
     <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["delete_profile"])) {
-            // Perform database deletion operation
-            // Retrieve the user ID from the URL
+            //odebirani uzivatele
             $userId = $_GET['id'];
 
-            // Make sure to properly sanitize and validate input before using in a query
+        
             $sql = "DELETE FROM zamestnanci WHERE id = $userId";
 
-            // Execute the query
             if ($conn->query($sql) === TRUE) {
                 echo '<meta http-equiv="refresh" content="0;url=employee-list.php">';
             } else {
                 echo "Chyba při odebírání záznamu " . $conn->error;
             }
         } else {
-            // Extract form data
+           //ziskani dat z inputu
             $name = $_POST['jmeno'];
             $lastName = $_POST['prijmeni'];
             $email = $_POST['email'];
@@ -211,7 +204,7 @@ if (isset($_GET['id'])) {
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Build and execute SQL query to update the user data
+            //vlozeni dat do databaze
             $sql = "UPDATE zamestnanci 
                 SET jmeno = '$name', prijmeni = '$lastName', pohlavi = '$gender', email = '$email', login = '$login', heslo = '$hashedPassword'
                 WHERE id = $userId";

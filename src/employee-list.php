@@ -1,19 +1,17 @@
 <?php
 include 'db/db_connect.php';
 
-// Initialize the $data array
 $data = array();
 
-// Query to fetch data from the table
 $sql = "SELECT id, jmeno, prijmeni, email, pohlavi, login, role FROM zamestnanci";
 $result = $conn->query($sql);
 
-// Check if there are rows in the result
+
 if ($result->num_rows > 0) {
 
-    // Output data of each row
+    //vkladani dat pro kazdy radek tabulky v databazi
     while ($row = $result->fetch_assoc()) {
-        // Push each row into the $data array
+       
         $data[] = $row;
     }
 } else {
@@ -130,16 +128,13 @@ if ($result->num_rows > 0) {
             }
 
             if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                // Check if the "delete_profile" parameter is present
+                //odebirani zaznamu
                 if (isset($_POST["delete_profile"])) {
-                    // Retrieve the employee ID from the form submission
+                  
                     $employee_id = $_POST["employee_id"];
 
-                    // Perform database deletion operation
-                    // Make sure to properly sanitize and validate input before using in a query
                     $sql = "DELETE FROM zamestnanci WHERE id = $employee_id";
 
-                    // Execute the query
                     if ($conn->query($sql) === TRUE) {
 
                         echo '<script>setTimeout(function(){ window.location.href = window.location.href; }, 10);</script>';
