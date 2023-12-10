@@ -184,13 +184,11 @@ if ($result && $result->num_rows > 0) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["delete_profile"])) {
             //odebirani uzivatele
-            $userId = $_GET['id'];
-
-
+            
             $sql = "DELETE FROM zamestnanci WHERE id = $userId";
 
             if ($conn->query($sql) === TRUE) {
-               
+
                 echo '<meta http-equiv="refresh" content="0;url=employee-list.php">';
                 //kontrola jestli neodbirame prihlaseneho uzivatele
                 if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $userId) {
