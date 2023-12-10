@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start the session
 include 'db/db_connect.php';
 
 $data = array();

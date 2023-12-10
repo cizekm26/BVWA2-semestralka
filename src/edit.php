@@ -1,22 +1,24 @@
 <?php
+session_start(); // Start the session
 include 'db/db_connect.php';
 
 //ziskani dat uzivatele
 if (isset($_GET['id'])) {
     $userId = $_GET['id'];
-
-    $sql = "SELECT * FROM zamestnanci WHERE id = $userId";
-    $result = $conn->query($sql);
-
-    if ($result && $result->num_rows > 0) {
-
-        $userData = $result->fetch_assoc();
-    } else {
-        echo "Uživatel nenalezen";
-    }
 } else {
-    echo "Neznámé ID uživatele";
+    $userId = $_SESSION['user_id'];
 }
+
+$sql = "SELECT * FROM zamestnanci WHERE id = $userId";
+$result = $conn->query($sql);
+
+if ($result && $result->num_rows > 0) {
+
+    $userData = $result->fetch_assoc();
+} else {
+    echo "Uživatel nenalezen";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -182,18 +184,24 @@ if (isset($_GET['id'])) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST["delete_profile"])) {
             //odebirani uzivatele
-            $userId = $_GET['id'];
-
-        
+            
             $sql = "DELETE FROM zamestnanci WHERE id = $userId";
 
             if ($conn->query($sql) === TRUE) {
+
                 echo '<meta http-equiv="refresh" content="0;url=employee-list.php">';
+                //kontrola jestli neodbirame prihlaseneho uzivatele
+                if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $userId) {
+                    unset($_SESSION['user_id']);
+                    session_destroy();
+                    echo '<script>window.location.href = "login.php";</script>';
+                    exit();
+                }
             } else {
                 echo "Chyba při odebírání záznamu " . $conn->error;
             }
         } else {
-           //ziskani dat z inputu
+            //ziskani dat z inputu
             $name = $_POST['jmeno'];
             $lastName = $_POST['prijmeni'];
             $email = $_POST['email'];
@@ -216,6 +224,7 @@ if (isset($_GET['id'])) {
             }
         }
     }
+
     $conn->close();
     ?>
 

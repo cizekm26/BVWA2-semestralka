@@ -1,9 +1,13 @@
-<?php
+<?php 
+session_start(); // Start the session
 include 'db/db_connect.php';
 
 
-$user_id = $_GET['id'];
-
+if (isset($_GET['id'])) {
+    $user_id = $_GET['id'];
+} else {
+    $user_id = $_SESSION['user_id'];
+}
 
 $sql = "SELECT * FROM zamestnanci WHERE id = $user_id";
 

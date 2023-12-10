@@ -1,3 +1,7 @@
+<?php
+session_start(); // Start the session
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,5 +13,14 @@
 </head>
 <body>
     <?php include 'templates/header.php';?>
+
+    <?php
+    // overeni uzivatele
+    if (!isset($_SESSION['user_id'])) {
+        echo "Uživatel neověřen!";
+        header("Location: login.php");
+        exit();
+    }
+    ?>
 </body>
 </html>
