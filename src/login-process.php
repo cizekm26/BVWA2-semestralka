@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $hashedPassword)) {
             $_SESSION['user_id'] = $userData['id'];
             $_SESSION['user_name'] = $userData['jmeno'] . ' ' . $userData['prijmeni'];
-            header("Location: index.php");
+            header("Location: profile.php");
             exit();
         } else {
            echo "Neplatné heslo";
