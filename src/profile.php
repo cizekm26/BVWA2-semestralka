@@ -31,6 +31,7 @@ $conn->close();
     <script src="js/script.js"></script>
 </head>
 
+
 <body class="bg-white">
     <?php include 'templates/header.php'; ?>
 
