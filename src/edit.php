@@ -118,7 +118,7 @@ if ($result && $result->num_rows > 0) {
                     <div class="md:w-2/3">
                         <input
                             class="bg-white border-2 border-grey-900 rounded w-full py-2 px-4 focus:outline-none focus:border-blue-500"
-                            id="photo" name="photo" value="<?php echo "{$userData['photo']}"; ?>" type="file" />
+                            id="photo" name="photo" type="file" />
                     </div>
                 </div>
                 <div class="md:flex md:items-center mb-6">
@@ -245,11 +245,11 @@ if ($result && $result->num_rows > 0) {
             $role = isset($_POST['role']) ? $_POST['role'] : '';
 
 
-            //kontrola jestli se photo načetlo správně
-            if (isset($_FILES['photo'])) {
+            //kontrola jestli se photo načetlo správně, pokud není žádná fotka vybrána, tak se nebude měnit
+            if (isset($_FILES['photo']) && $_FILES['photo']['size'] > 0){
                 $photo = photo($connection, $login);
             } else {
-                $photo = '';
+                $photo = $userData['photo'];
             }
 
             if(isset($_POST['heslo'])){
