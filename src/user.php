@@ -11,38 +11,48 @@ function photo($connection, $login)
 
     if ($error === 0) {
 
-            // Získá koncovku obrázku (.jpg, ...)
-            $photo_extension = pathinfo($photo_name, PATHINFO_EXTENSION);
-            // nastaví ji na malé písmena - kdyby náhodou
-            $photo_extension = strtolower($photo_extension);
-            // Povolené koncovky
-            $allowed_extensions = ["jpg", "jpeg", "png", "gif", "bmp", "tiff"];
+        // Získá koncovku obrázku (.jpg, ...)
+        $photo_extension = pathinfo($photo_name, PATHINFO_EXTENSION);
+        // nastaví ji na malé písmena - kdyby náhodou
+        $photo_extension = strtolower($photo_extension);
+        // Povolené koncovky
+        $allowed_extensions = ["jpg", "jpeg", "png", "gif", "bmp", "tiff"];
 
-            // Zjištění zda ukládaný obrázek souhlasí s některou s povolených koncovek
-            if (in_array($photo_extension, $allowed_extensions)) {
-                // Vygenerování unikátního názvu pro obrázek - pro jistotu
-                // Zároveň uložení jako .jpeg soubor
-                $new_photo_name =  "PROFILE_IMG_$login" . "." ."jpeg";
+        // Zjištění zda ukládaný obrázek souhlasí s některou s povolených koncovek
+        if (in_array($photo_extension, $allowed_extensions)) {
+            // Zároveň uložení jako .jpeg soubor
+            $new_photo_name = "PROFILE_IMG_$login" . "." . "jpeg";
 
-                // Vytvoření složky pro uživatele pokud ještě neexistje
-                if (!file_exists("./resources/" . $login)) {
-                    mkdir("./resources/" . $login, 0707, true);
-                }
-
-                // Nahrání do složky pro uživatele
-                $photo_upload_path = "./resources/" . $login . "/" . $new_photo_name;
-                move_uploaded_file($photo_tmp_name, $photo_upload_path);
-
-                $resizedWidth = 800;
-                resizeImage($photo_upload_path, $photo_upload_path, $resizedWidth);
-
-                return $new_photo_name;
-            } else {
-                return "format";
+            // Vytvoření složky pro uživatele pokud ještě neexistje
+            if (!file_exists("./resources/" . $login)) {
+                mkdir("./resources/" . $login, 0707, true);
             }
-        
+
+            // Nahrání do složky pro uživatele
+            $photo_upload_path = "./resources/" . $login . "/" . $new_photo_name;
+            move_uploaded_file($photo_tmp_name, $photo_upload_path);
+
+            $resizedWidth = 800;
+            resizeImage($photo_upload_path, $photo_upload_path, $resizedWidth);
+
+            return $new_photo_name;
+        } else {
+            return "format";
+        }
+
     } else {
-        return "error";
+        // uživatel si nevybral fotku
+        if (!file_exists("./resources/" . $login)) {
+            mkdir("./resources/" . $login, 0707, true);
+        }
+
+        $default_photo_path = "./resources/img/profile.jpg"; //cesta k výchozí fotografii
+        $new_photo_name = "PROFILE_IMG_default.jpeg";
+        $photo_upload_path = "./resources/" . $login . "/" . $new_photo_name;
+
+        copy($default_photo_path, $photo_upload_path);
+
+        return $new_photo_name;
     }
 }
 
@@ -205,8 +215,9 @@ function resizeImage($sourcePath, $targetPath, $width) {
 }
 
 
-function getUserData($connection, $userId) {
-    $stmt = $connection->prepare("SELECT id, jmeno, prijmeni, role FROM zamestnanci WHERE id = ?");
+function getUserData($connection, $userId)
+{
+    $stmt = $connection->prepare("SELECT id, jmeno, prijmeni, login, role, photo FROM zamestnanci WHERE id = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $result = $stmt->get_result();

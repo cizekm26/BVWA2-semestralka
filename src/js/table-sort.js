@@ -1,5 +1,5 @@
-const roleColumnId = 6;
-const genderColumnId = 4;
+const roleColumnId = 7;
+const genderColumnId = 5;
 
 // filtrování tabulky
 function filterTable() {

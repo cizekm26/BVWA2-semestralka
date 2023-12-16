@@ -4,6 +4,7 @@ session_start(); // Start the session
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +12,9 @@ session_start(); // Start the session
     <link href="../dist/output.css" rel="stylesheet">
     <title>Přihlášení</title>
 </head>
+
 <body>
-    <?php include 'templates/header.php';?>
+    <?php require 'templates/header.php'; ?>
 
     <?php
     // overeni uzivatele
@@ -23,4 +25,5 @@ session_start(); // Start the session
     }
     ?>
 </body>
+
 </html>

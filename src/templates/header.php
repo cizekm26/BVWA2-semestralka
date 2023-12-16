@@ -19,7 +19,7 @@
                   }
             ?>
           </span>
-                    <img class="dropButton inline h-8 rounded-full" src="../public/imgs/profile.jpg">
+          <img class="dropButton inline h-8 rounded-full"  src="resources/<?php if(isset($_SESSION["user_name"])){ echo $_SESSION['user_name']['login']; ?>/<?php echo $_SESSION['user_name']['photo']; } else echo "img/profile.jpg"?>" >
                 </button>
                 <div id="dropdown" class="z-50 absolute hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
                         <a href="profile.php" class="block px-4 py-2 hover:bg-gray-200">Zobrazit profil</a>
