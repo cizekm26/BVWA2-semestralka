@@ -1,12 +1,19 @@
 <?php
-$servername = "localhost";  
-$username = "root";         
-$password = "";             
-$dbname = "semestralni_prace";  
+    // Funkce pro připojení do databáze
+    function databaseConnection() {
+        // Údaje k databázi
+        $db_host = "localhost";
+        $db_user = "root";
+        $db_password = "";
+        $db_name = "semestralni_prace";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+        $connection = mysqli_connect($db_host, $db_user, $db_password, $db_name);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+        if (mysqli_connect_error()) {
+            echo mysqli_connect_error();
+            exit;
+        }
+
+        return $connection;
+    }
 ?>

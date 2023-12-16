@@ -1,9 +1,17 @@
+<?php
+  session_start();
+
+  if(!isset($_SESSION['logged_user'])){
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="output.css" rel="stylesheet">
+    <link href="../dist/output.css" rel="stylesheet">
     <script src="./js/script.js"></script>
     <title>Zpráva</title>
 </head>
@@ -11,7 +19,7 @@
     <?php include './templates/header.php'; ?>
     <div class="md:mx-20 mx-auto max-w-lg mt-5 sm:max-w-xl lg:max-w-full lg:px-5 flex flex-col">
       <div class="px-4 sm:px-0 flex items-stretch justify-between flex-wrap">
-        <h1 class="text-3xl font-semibold">Zpráva</h1>
+        <h1 class="text-3xl font-extrabold">Zpráva</h1>
         <div>
             <a href="new-message.php" class="w-28 rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Odpovědět</a>
             <a href="messages.php" class="w-28 rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Zpět</a>

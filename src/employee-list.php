@@ -1,11 +1,20 @@
 <?php
 session_start(); // Start the session
+
 include 'db/db_connect.php';
+
+if(!isset($_SESSION['logged_user'])){
+    header('Location: index.php');
+    exit();
+}
+
+
+$connection = databaseConnection();
 
 $data = array();
 
 $sql = "SELECT id, jmeno, prijmeni, email, pohlavi, login, role FROM zamestnanci";
-$result = $conn->query($sql);
+$result = $connection->query($sql);
 
 
 if ($result->num_rows > 0) {
@@ -29,21 +38,21 @@ if ($result->num_rows > 0) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Seznam zaměstnanců</title>
-    <link href="output.css" rel="stylesheet">
+    <link href="../dist/output.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/060a5d6fda.js" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
-
+    <script src="js/table-sort.js"></script>
 </head>
 
 <body class="bg-white">
     <?php include './templates/header.php'; ?>
-    <div class="md:mx-20 mx-auto max-w-lg mt-5 sm:max-w-xl lg:max-w-full lg:px-5 flex flex-col">
+    <div class="md:mx-20 mx-auto max-w-lg mt-5 mb-5 sm:max-w-xl lg:max-w-full lg:px-5 flex flex-col">
         <div class="px-4 sm:px-0">
-            <h1 class="text-3xl font-semibold">Zaměstnanci</h1>
+            <h1 class="text-3xl font-extrabold">Zaměstnanci</h1>
         </div>
         <details>
             <summary class="p-2 text-xl font-semibold">Filtr</summary>
-        <form class="w-full max-w-lg p-5 mb-5">
+            <form class="w-full max-w-lg p-5">
             <div class="md:flex md:items-center mb-6">
                 <div class="md:w-1/3">
                     <label class="block font-bold md:text-right mb-1 md:mb-0 pr-4" for="columns">Vyhledat podle</label>
@@ -62,11 +71,11 @@ if ($result->num_rows > 0) {
                 </div>
             </div>
             <div class="md:flex md:items-center mb-6">
-                <div class="w-1/3">
+                <div class="md:w-1/3">
                     <label class="block font-bold md:text-right mb-1 md:mb-0 pr-4" for="gender">Pohlaví</label>
                 </div>
-                <div class="w-2/3">
-                    <select id="gender" class="bg-white border-2 border-grey-900 rounded w-full py-2 px-4 focus:outline-none focus:border-blue-500">
+                <div class="md:w-2/3">
+                    <select id="gender" class="w-full bg-white border-2 border-grey-900 rounded py-2 px-4 focus:outline-none focus:border-blue-500">
                         <option value="0">-</option>
                         <option value="muž">muž</option>
                         <option value="žena">žena</option>
@@ -74,10 +83,10 @@ if ($result->num_rows > 0) {
                 </div>
             </div>
             <div class="md:flex md:items-center mb-6">
-                <div class="w-1/3">
+                <div class="md:w-1/3">
                     <label class="block font-bold md:text-right mb-1 md:mb-0 pr-4" for="role">Role</label>
                 </div>
-                <div class="w-2/3">
+                <div class="md:w-2/3">
                     <select id="role" class="bg-white border-2 border-grey-900 rounded w-full py-2 px-4 focus:outline-none focus:border-blue-500">
                         <option value="0">-</option>
                         <option value="user">user</option>
@@ -91,8 +100,8 @@ if ($result->num_rows > 0) {
             </div>
         </form>
         </details>
-        <hr>
-        <table id="employees-table" class="bg-gray-100 rounded border-separate mt-5 w-full border shadow text-left">
+        <div class="overflow-x-scroll">
+        <table id="employees-table" class=" bg-gray-100 rounded border-separate w-full border shadow text-left">
             <thead>
                 <tr class="bg-blue-500 text-white cursor-pointer">
                     <th class="rounded-tl p-1" onclick="sortTable(0)">ID</th>
@@ -114,14 +123,12 @@ if ($result->num_rows > 0) {
                             echo "<td class='p-1'>$value</td>";
                         }
 
-                        echo '<td class="p-1">
-                    
-            <form class="divide-x-2" method="post" onsubmit="return confirmDelete()">
-
-            <a href="profile.php?id=' . $employee['id'] . '" class="bg-blue-500 text-white px-3 py-2 rounded" title="Zobrazit profil">
+                        echo '<td scope="row" class="flex flex-row flex-wrap gap-1 p-1">';
+                    echo '<a href="profile.php?id=' . $employee['id'] . '" class="bg-blue-500 text-white px-3 py-2 rounded" title="Zobrazit profil">
             <i class="fa-solid fa-eye fa-xs" alt="Zobrazit profil"></i></button>
-            </a>
-
+            </a>';
+            if ($_SESSION['user_name']['role'] === 'admin') {
+                echo '<form class="flex flex-row flex-wrap gap-1" method="post" onsubmit="return confirmDelete()">            
             <a href="edit.php?id=' . $employee['id'] . '" class="bg-green-500 text-white px-3 py-2 rounded" title="Upravit profil">
             <i class="fa-solid fa-pen-to-square fa-xs" alt="Upravit profil"></i>
             </a>
@@ -132,10 +139,10 @@ if ($result->num_rows > 0) {
             <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded" title="Smazat profil" name="delete_profile">
                 <i class="fa-solid fa-trash fa-xs" alt="Smazat profil"></i></button>
         
-            </form>
-                    
+            </form>';
+            }     
         
-      </td></tr>';
+      echo '</td></tr>';
                         echo "</tr>";
                     }
                 } else {
@@ -145,130 +152,46 @@ if ($result->num_rows > 0) {
                 if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     //odebirani zaznamu
                     if (isset($_POST["delete_profile"])) {
-
                         $employee_id = $_POST["employee_id"];
-
+                
                         $sql = "DELETE FROM zamestnanci WHERE id = $employee_id";
-
-                        if ($conn->query($sql) === TRUE) {
-
-                            echo '<script>setTimeout(function(){ window.location.href = window.location.href; }, 10);</script>';
+                        echo '<script>setTimeout(function(){ window.location.href = "employee-list.php"; }, 10);</script>';
+                
+                        if ($connection->query($sql) === TRUE) {
+                            $folder_path = "./resources/" . $login;
+                
+                            if (file_exists($folder_path) && is_dir($folder_path)) {
+                                rmdir($folder_path);
+                            }
+                
+                            //kontrola jestli neodbirame prihlaseneho uzivatele
+                            if (isset($_SESSION['logged_user']) && $_SESSION['logged_user'] == $employee_id) {
+                                unset($_SESSION['logged_user']);
+                                session_destroy();
+                                exit();
+                            }
                         } else {
-                            echo "Chyba při odebírání záznamu " . $conn->error;
+                            echo "Chyba při odebírání záznamu " . $connection->error;
                             echo "<br><br>";
                         }
                     }
                 }
 
-                $conn->close();
+                if (!isset($_SESSION['logged_user'])) {
+                    header("Location: login.php");
+                    exit();
+                }
+
+                $connection->close();
                 ?>
 
             </tbody>
         </table>
+        </div>
     </div>
 </body>
 
 <script>
-    const roleColumnId = 6;
-    const genderColumnId = 4;
-
-    function filterTable() {
-        var textInput = document.getElementById("key");
-        var genderSelect = document.getElementById("gender");
-        var roleSelect = document.getElementById("role");
-        var columnSelect = document.getElementById("columns");
-        // id sloupce, který bude filtrován (ID, jméno, příjmení, email nebo login)
-        var columnId = columnSelect.value;
-
-        // hledané hodnoty
-        var text = textInput.value.toLowerCase();
-        var gender = genderSelect.value;
-        var role = roleSelect.value;
-
-        var table = document.getElementById("employees-table");
-        // všechny řádky tabulky
-        var rows = table.getElementsByTagName("tr");
-
-        var searchedValues = [text, gender, role];
-        for (i = 1; i < rows.length; i++) {
-            // všechny buňky v řádku
-            var row = rows[i].getElementsByTagName("td");
-            textValue = getCellValue(row, columnId);
-            genderValue = getCellValue(row, genderColumnId);
-            roleValue = getCellValue(row, roleColumnId);
-
-            if (valuesAreEqual([textValue, genderValue, roleValue], searchedValues))
-                rows[i].style.display = "";
-            else
-                rows[i].style.display = "none";
-        }
-    }
-
-    function getCellValue(row, columnId) {
-        var td = row[columnId];
-        if (td)
-            return td.text || td.innerText;
-        else
-            return "";
-    }
-
-    //hodnoty v řádku jsou shodné s těmi ve filtru
-    function valuesAreEqual(rowValues, searchedValues) {
-        if (rowValues[0].toLowerCase().indexOf(searchedValues[0]) < 0)
-            return false;
-        if (searchedValues[1] != 0) {
-            if (rowValues[1].indexOf(searchedValues[1]) < 0)
-                return false;
-        }
-        if (searchedValues[2] != 0) {
-            if (rowValues[2].indexOf(searchedValues[2]) < 0)
-                return false;
-        }
-        return true;
-    }
-
-    function removeFilter() {
-        var textInput = document.getElementById("key");
-        var genderSelect = document.getElementById("gender");
-        var roleSelect = document.getElementById("role");
-
-        textInput.value = "";
-        genderSelect.selectedIndex = 0;
-        roleSelect.selectedIndex = 0;
-
-        var table = document.getElementById("employees-table");
-        var rows = table.getElementsByTagName("tr");
-
-        for (i = 1; i < rows.length; i++) {
-            var row = rows[i].getElementsByTagName("td");
-            rows[i].style.display = "";
-        }
-    }
-
-    function sortTable(column) {
-        var table, rows, i, current, next, switching;
-        table = document.getElementById("employees-table");
-        switching = true;
-        while (switching) {
-            switching = false;
-            rows = table.rows;
-            for (i = 1; i < rows.length - 1; i++) {
-                if(column == 0){
-                    current = parseInt(rows[i].getElementsByTagName("td")[column].innerHTML);
-                    next = parseInt(rows[i + 1].getElementsByTagName("td")[column].innerHTML);
-                }else{
-                    current = rows[i].getElementsByTagName("td")[column].innerHTML.toLowerCase();
-                    next = rows[i + 1].getElementsByTagName("td")[column].innerHTML.toLowerCase();
-                }
-                if (current > next) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    break;
-                }
-            }
-        }
-    }
-
     function confirmDelete() {
         return confirm("Opravdu chcete tento záznam smazat?");
     }

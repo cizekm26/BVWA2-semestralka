@@ -1,3 +1,11 @@
+<?php
+  session_start();
+
+  if(!isset($_SESSION['logged_user'])){
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +13,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://kit.fontawesome.com/060a5d6fda.js" crossorigin="anonymous"></script>
-  <link href="output.css" rel="stylesheet">
+  <link href="../dist/output.css" rel="stylesheet">
   <script src="./js/script.js"></script>
   <title>Zprávy</title>
 </head>
@@ -14,11 +22,11 @@
   <?php include './templates/header.php'; ?>
   <div class="md:mx-20 mx-auto max-w-lg mt-5 sm:max-w-xl lg:max-w-full lg:px-5 flex flex-col">
     <div class="px-4 sm:px-0 flex items-stretch justify-between flex-wrap">
-      <h1 class="text-3xl font-semibold">Zprávy</h1>
+      <h1 class="text-3xl font-extrabold">Zprávy</h1>
       <a href="new-message.php"
         class="rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Napsat zprávu</a>
     </div>
-    <table class="bg-gray-100 rounded border-separate mt-5 w-full border shadow text-left">
+    <table class="bg-gray-100 rounded border-collapse mt-5 w-full border shadow text-left">
       <thead>
         <tr class="bg-blue-500 text-white">
           <th class="rounded-tl p-2">Datum</th>
