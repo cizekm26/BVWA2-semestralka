@@ -8,7 +8,7 @@ require_once "user.php";
                 <a class="font-bold text-white text-2xl cursor-pointer" href="profile.php">Profil zaměstnance</a>
             <div class="block flex-end flex-wrap md:flex md:items-center md:w-auto md:mt-0 mt-5">
                 <a class="text-white hover:text-gray-200 px-4 py-2 hover:bg-blue-600 cursor-pointer font-bold" href="employee-list.php">Seznam zaměstnanců</a>
-                <a class="text-white hover:text-gray-200 px-4 py-2 hover:bg-blue-600 cursor-pointer font-bold" href="messages.php">Zprávy <span class="rounded-full px-2 py-1 bg-green-500"><?php if(isset($_SESSION['logged_user'])) echo getNewMessagesCount(databaseConnection(), $_SESSION['logged_user']); ?></span></a>
+                <a class="text-white hover:text-gray-200 px-4 py-2 hover:bg-blue-600 cursor-pointer font-bold" href="messages.php">Zprávy <?php if(isset($_SESSION['logged_user'])){echo '<span class="rounded-full px-2 py-1 bg-green-500">'.getNewMessagesCount(databaseConnection(), $_SESSION["logged_user"]).'</span>';}?></a>
               
                 <div class="dropdown">
                 <button <?php if(isset($_SESSION['logged_user'])){ echo 'onclick="showMenu()"';}?> class="dropButton flex flex-row items-center space-x-2 w-full px-4 py-2 mt-2 bg-blue-600 hover:bg-blue-800 md:w-auto md:inline md:mt-0 md:ml-4 rounded-lg">
