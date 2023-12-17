@@ -230,6 +230,24 @@ function getUserData($connection, $userId)
     }
 }
 
+// vrací počet nepřečtených zpráv
+function getNewMessagesCount($connection, $id)
+{
+    $type = 'prijata';
+    $read = 0;
+    $stmt = $connection->prepare("SELECT count(id) as count FROM zpravy_zamestnancu WHERE id_zamestnanec = ? AND typ = ? AND zobrazena = ?");
+    $stmt->bind_param("isi", $id, $type, $read);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $data = $result->fetch_assoc();
+        return $data['count'];
+    } else {
+        return 0;
+    }
+}
+
 
 // Zobrazení obrázku
 // echo "<img src='" . getUserPhoto(databaseConnection(), $login) . "'";

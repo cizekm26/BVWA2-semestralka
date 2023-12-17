@@ -97,7 +97,7 @@ $connection->close();
                             </dd>
                         </div>
                     </dl>
-                    <div class="mt-5">
+                    <div class="p-5">
                         <?php
                         // zpřístupění tlačítek, podle toho, jestli je uživatel admin
                         if ($_SESSION['user_name']['role'] == 'admin' || ($_SESSION['logged_user'] == $user_id)) {
