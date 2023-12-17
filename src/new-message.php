@@ -94,7 +94,7 @@ $connection->close();
             </div>
             <div class="mt-5 px-4 sm:px-0 flex flex-end items-stretch justify-between flex-wrap">
                 <a href="messages.php" class="w-1/5 text-center rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Zpět</a>
-                <input type="submit" name="send" class="w-1/5 text-center rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold" />
+                <input type="submit" name="send" class="w-1/5 text-center rounded-lg shadow-lg text-sm text-white bg-blue-500 w-50 uppercase font-semibold" />
             </div>
     </div>
     </form>
