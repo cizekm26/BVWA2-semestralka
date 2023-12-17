@@ -1,10 +1,30 @@
 <?php
   session_start();
+  require 'db/db_connect.php';
+
+  $connection = databaseConnection();
 
   if(!isset($_SESSION['logged_user'])){
     header('Location: index.php');
     exit();
-}
+  }
+
+  // načtení zprávy
+  if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $messageId = $_GET['id'];
+    $sql = "SELECT zpravy.id, zpravy.predmet, zpravy.obsah, zamestnanci.login,zamestnanci.jmeno, zamestnanci.prijmeni, zpravy.prijemce_id, DATE_FORMAT(zpravy.cas_odeslani, '%d. %m. %Y %H:%i') as cas_odeslani FROM zpravy INNER JOIN zamestnanci ON zamestnanci.id = zpravy.odesilatel_id"." WHERE zpravy.id =". $messageId;
+    $result = $connection->query($sql);
+    if ($result && $result->num_rows > 0) {
+      $message = $result->fetch_assoc();
+      // označení přečtené zprávy
+      $stmt = $connection->prepare("UPDATE zpravy SET zobrazena = ? WHERE id = ?");
+      $read = 1;
+      $stmt->bind_param('ii', $read,$messageId);
+      $stmt->execute();
+    } else {
+      echo "Zpráva nebyla nalezena";
+    }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,24 +41,24 @@
       <div class="px-4 sm:px-0 flex items-stretch justify-between flex-wrap">
         <h1 class="text-3xl font-extrabold">Zpráva</h1>
         <div>
-            <a href="new-message.php" class="w-28 rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Odpovědět</a>
+            <a href="new-message.php?login=<?php echo $message['login'];?>" class="w-28 rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Odpovědět</a>
             <a href="messages.php" class="w-28 rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Zpět</a>
         </div>
       </div>
       <div class="mt-5 bg-gray-100 shadow-md p-5 rounded divide-y divide-gray-600">
         <div class="flex items-stretch py-2 justify-between flex-wrap">
             <div>
-                <span class="font-bold">Od: </span><span>Jan Novák</span>
+                <span class="font-bold">Od: </span><span><?php echo $message["jmeno"]. " ". $message["prijmeni"];?></span>
             </div>
             <div>
-              <span class="font-bold">Odesláno: </span><span>9. 12. 2023</span>
+              <span class="font-bold">Odesláno: </span><span><?php echo $message["cas_odeslani"];?></span>
             </div>
         </div>
         <div class="py-2 text-lg">
-            Předmět
+          <?php echo $message["predmet"];?>
         </div>
         <div class="py-2">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid culpa perspiciatis veritatis repellat corrupti hic, repudiandae doloremque aspernatur iure, minima quos ullam reiciendis, natus totam deleniti facere tempora illo ab.
+          <?php echo $message["obsah"];?>
         </div>
         <div>
 
