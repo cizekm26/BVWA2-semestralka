@@ -2,12 +2,14 @@
 session_start(); // Start the session
 
 include 'db/db_connect.php';
+require 'user.php';
 
 if (!isset($_SESSION['logged_user'])) {
     header('Location: index.php');
     exit();
 }
 
+checkUserActivity();
 
 $connection = databaseConnection();
 
@@ -21,7 +23,8 @@ if ($result->num_rows > 0) {
 
     //vkladani dat pro kazdy radek tabulky v databazi
     while ($row = $result->fetch_assoc()) {
-
+        $row['email'] = decryptData($row['email']);
+        $row['telefon'] = decryptData($row['telefon']);
         $data[] = $row;
     }
 } else {

@@ -2,6 +2,9 @@
 session_start();
 
 include 'db/db_connect.php';
+require 'user.php';
+
+checkUserActivity();
 
 if (!isset($_SESSION['logged_user'])) {
   header('Location: index.php');
@@ -18,6 +21,8 @@ $resultReceived = $connection->query($sql);
 
 if ($resultReceived->num_rows > 0) {
   while ($row = $resultReceived->fetch_assoc()) {
+    $row['predmet'] = decryptData($row['predmet']);
+    $row['obsah'] = decryptData($row['obsah']);
     $receivedMessages[] = $row;
   }
 }
@@ -28,6 +33,8 @@ $resultSended = $connection->query($sql);
 
 if ($resultSended->num_rows > 0) {
   while ($row = $resultSended->fetch_assoc()) {
+    $row['predmet'] = decryptData($row['predmet']);
+    $row['obsah'] = decryptData($row['obsah']);
     $sendedMessages[] = $row;
   }
 }

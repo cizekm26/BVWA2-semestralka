@@ -1,9 +1,17 @@
 <?php 
 session_start(); // Start the session
 require 'db/db_connect.php';
+require 'user.php';
+
+
+if (!isset($_SESSION['logged_user'])) {
+    header('Location: index.php');
+    exit();
+}
 
 $connection = databaseConnection();
 
+checkUserActivity();
 
 if (isset($_GET['id'])) {
     $user_id = $_GET['id'];
@@ -27,6 +35,8 @@ $result = $connection->query($sql);
 if ($result !== false && $result->num_rows > 0) {
     //uživatel v databázi existuje
     $userData = $result->fetch_assoc();
+    $userData["email"] = decryptData($userData["email"]);
+    $userData["telefon"] = decryptData($userData["telefon"]);
 } else {
     // uživatel nenalezen v databázi
     header("Location: index.php");

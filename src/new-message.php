@@ -1,8 +1,12 @@
 <?php
 session_start();
 require "db/db_connect.php";
+require 'user.php';
+
 
 $connection = databaseConnection();
+
+checkUserActivity();
 
 if (!isset($_SESSION['logged_user'])) {
     header('Location: index.php');
@@ -17,8 +21,8 @@ if (isset($_GET["login"])) {
 
 if (isset($_POST["send"])) {
     $login = isset($_POST["login"]) ? $_POST["login"] : '';
-    $topic = isset($_POST["topic"]) ? $_POST["topic"] : '';;
-    $message = isset($_POST["message"]) ? $_POST["message"] : '';;
+    $topic = isset($_POST["topic"]) ? encryptData($_POST["topic"]) : '';;
+    $message = isset($_POST["message"]) ? encryptData($_POST["message"]) : '';;
     // získání id příjemce zprávy
     $sql = "SELECT id FROM zamestnanci WHERE login = '$login' LIMIT 1";
     $result = $connection->query($sql);
@@ -90,7 +94,7 @@ $connection->close();
                 </div>
             </div>
             <div>
-                <textarea name="message" id="message" rows="6" class="block p-2.5 w-full rounded border-2 border-gray-200 focus:outline-none focus:border-blue-500" placeholder="Napište text zprávy..." minlength="1"></textarea>
+                <textarea name="message" id="message" rows="6" class="block p-2.5 w-full rounded border-2 border-gray-200 focus:outline-none focus:border-blue-500" placeholder="Napište text zprávy..." required></textarea>
             </div>
             <div class="mt-5 px-4 sm:px-0 flex flex-end items-stretch justify-between flex-wrap">
                 <a href="messages.php" class="w-1/5 text-center rounded-lg shadow-lg text-sm text-white bg-blue-500 px-2 py-3 uppercase font-semibold">Zpět</a>

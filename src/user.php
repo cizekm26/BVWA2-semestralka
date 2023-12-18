@@ -39,7 +39,6 @@ function photo($connection, $login)
         } else {
             return "format";
         }
-
     } else {
         // uživatel si nevybral fotku
         if (!file_exists("./resources/" . $login)) {
@@ -76,14 +75,14 @@ function anyProblemWithPhoto($error)
 }
 
 // Funkce pro přidání nově registrovaného uživatele
-function createUser($connection, $first_name, $last_name, $phone_number,$email, $gender, $login, $password, $photo)
+function createUser($connection, $first_name, $last_name, $phone_number, $email, $gender, $login, $password, $photo)
 {
     if (!doesThisUserExists($connection, $login)) {
         $sql = "INSERT INTO zamestnanci (jmeno, prijmeni, email,telefon, pohlavi, login, role, heslo, photo) VALUES (?, ?, ?, ?, ?,?, 'user', ?, ?)";
         $stmt = mysqli_prepare($connection, $sql);
 
         if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ssssssss", $first_name, $last_name, $email, $phone_number,$gender, $login, $password, $photo);
+            mysqli_stmt_bind_param($stmt, "ssssssss", $first_name, $last_name, encryptData($email), encryptData($phone_number), $gender, $login, $password, $photo);
             mysqli_stmt_execute($stmt);
             $id = mysqli_insert_id($connection);
 
@@ -191,7 +190,8 @@ function getUserLogin($connection, $id)
     }
 }
 
-function resizeImage($sourcePath, $targetPath, $width) {
+function resizeImage($sourcePath, $targetPath, $width)
+{
     list($originalWidth, $originalHeight) = getimagesize($sourcePath);
     $aspectRatio = $originalWidth / $originalHeight;
     $newHeight = $width / $aspectRatio;
@@ -248,7 +248,59 @@ function getNewMessagesCount($connection, $id)
     }
 }
 
+function checkUserActivity()
+{
+    // kontrola jestli poslední aktivita je nastavena
+    if (isset($_SESSION['last_activity'])) {
+        $inactive_time = 20 * 60; // 20 minut ve vteřinách 
+
+        // kontrola jestli byl uživatel neaktivní poslední 20 minut
+        if (time() - $_SESSION['last_activity'] > $inactive_time) {
+            // odhlášení uživatele
+            session_unset();
+            session_destroy();
+            header("Location: logout.php");
+            exit();
+        }
+    }
+
+    //aktualizace poslední aktivity při načtení stránky
+    $_SESSION['last_activity'] = time();
+}
+
+// šifrování a dešifrování dat
+// zdroj: https://www.geeksforgeeks.org/how-to-encrypt-and-decrypt-a-php-string/ 
+function encryptData($data)
+{
+    $ciphering = "AES-128-CTR";
+    $iv_length = openssl_cipher_iv_length($ciphering);
+    $options = 0;
+    $encryption_iv = '1234567891011121';
+    $encryption_key = "EncryptionKey";
+    return openssl_encrypt(
+        $data,
+        $ciphering,
+        $encryption_key,
+        $options,
+        $encryption_iv
+    );
+}
+
+function decryptData($encryption)
+{
+    $ciphering = "AES-128-CTR";
+    $iv_length = openssl_cipher_iv_length($ciphering);
+    $options = 0;
+    $decryption_iv = '1234567891011121';
+    $decryption_key = "EncryptionKey";
+    return openssl_decrypt(
+        $encryption,
+        $ciphering,
+        $decryption_key,
+        $options,
+        $decryption_iv
+    );
+}
 
 // Zobrazení obrázku
 // echo "<img src='" . getUserPhoto(databaseConnection(), $login) . "'";
-?>

@@ -2,6 +2,7 @@
 require "db/db_connect.php";
 require "user.php";
 
+
 session_start();
 $msg = null;
 $user_msg = null;
@@ -57,6 +58,7 @@ if (isset($_POST["register"]) && isset($_FILES["photo"])) {
     } else {
         $msg = null;
         $user_msg = $existing_user;
+        echo '<script>alert("uživatel se stejným jménem již existuje")</script>';
     }
 }
 ?>
